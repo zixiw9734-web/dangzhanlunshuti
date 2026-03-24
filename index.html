@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>党课考试题及答案 (完整复习题库)</title>
+    <style>
+        :root {
+            --primary-red: #DA251D;    
+            --primary-gold: #D4AF37;   
+            --bg-color: #F4F7F9;       
+            --sidebar-bg: #FFFFFF;     
+            --card-bg: #FFFFFF;        
+            --text-main: #2C3E50;      
+            --text-desc: #34495E;      
+            --border-color: #E2E8F0;
+            --success-color: #38A169;  
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: "PingFang SC", "Microsoft YaHei", -apple-system, sans-serif;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            height: 100vh;
+            overflow: hidden; 
+        }
+
+        /* 左侧固定目录栏 */
+        .sidebar {
+            width: 280px;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 2px 0 12px rgba(0,0,0,0.04);
+            z-index: 10;
+            flex-shrink: 0;
+        }
+
+        .sidebar-header {
+            padding: 25px 20px;
+            border-bottom: 1px solid var(--border-color);
+            background-color: #FAFAFA;
+        }
+
+        .sidebar-header h2 {
+            font-size: 18px;
+            color: var(--primary-red);
+            margin-bottom: 15px;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .progress-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: var(--text-desc);
+            font-weight: bold;
+        }
+
+        .progress-bar-bg {
+            height: 8px;
+            background-color: var(--border-color);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #FF6B6B, var(--primary-red));
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .toc-list {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 15px 0;
+        }
+
+        .toc-item {
+            padding: 14px 20px;
+            display: block;
+            color: var(--text-desc);
+            text-decoration: none;
+            font-size: 14px;
+            border-left: 3px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+            line-height: 1.4;
+        }
+
+        .toc-item:hover {
+            background-color: #F8F9FA;
+            color: var(--primary-red);
+        }
+
+        .toc-item.active {
+            background-color: rgba(218, 37, 29, 0.05);
+            color: var(--primary-red);
+            border-left-color: var(--primary-red);
+            font-weight: bold;
+        }
+
+        /* 右侧主内容区 */
+        .main-content {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 30px 40px;
+            scroll-behavior: smooth;
+        }
+
+        .content-wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+            padding-bottom: 100px;
+        }
+
+        .chapter-title {
+            font-size: 22px;
+            color: var(--primary-gold);
+            margin: 50px 0 20px 0;
+            padding-bottom: 12px;
+            border-bottom: 2px solid rgba(212, 175, 55, 0.3);
+            font-weight: bold;
+        }
+
+        .chapter-title:first-child {
+            margin-top: 0;
+        }
+
+        /* 知识卡片 */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border-left: 4px solid var(--primary-red);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .card.mastered {
+            border-left-color: #CBD5E0;
+            background-color: #F8FAFC;
+            box-shadow: none;
+        }
+
+        .card-header {
+            padding: 18px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            cursor: pointer;
+            gap: 15px;
+        }
+
+        /* 极简打勾选框 */
+        .check-circle {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #CBD5E0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: all 0.2s;
+            margin-top: 2px;
+        }
+
+        .check-circle:hover {
+            border-color: var(--primary-red);
+        }
+
+        .card.mastered .check-circle {
+            background-color: var(--success-color);
+            border-color: var(--success-color);
+        }
+
+        .check-circle svg {
+            width: 14px;
+            height: 14px;
+            fill: none;
+            stroke: white;
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .card.mastered .check-circle svg {
+            opacity: 1;
+        }
+
+        .question-text {
+            font-size: 16px;
+            font-weight: bold;
+            line-height: 1.6;
+            flex-grow: 1;
+            color: var(--text-main);
+            transition: color 0.3s;
+        }
+
+        .card.mastered .question-text {
+            color: #A0AEC0;
+            font-weight: normal;
+        }
+
+        .toggle-arrow {
+            font-size: 14px;
+            color: #A0AEC0;
+            transition: transform 0.3s ease;
+            margin-top: 4px;
+        }
+
+        .card.open .toggle-arrow {
+            transform: rotate(180deg);
+        }
+
+        /* 答案区 */
+        .card-body {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            background-color: #FAFAFA;
+        }
+
+        .card.open .card-body {
+            max-height: 5000px; 
+            opacity: 1;
+            padding: 20px;
+            border-top: 1px dashed var(--border-color);
+        }
+
+        .answer-text {
+            color: var(--text-desc);
+            line-height: 1.8;
+            font-size: 15px;
+        }
+
+        /* 填空题高亮（还原你的手写与下划线标注） */
+        .highlight {
+            color: var(--primary-red);
+            font-weight: bold;
+            background-color: rgba(218, 37, 29, 0.08);
+            padding: 2px 6px;
+            border-radius: 4px;
+            border-bottom: 2px solid rgba(218, 37, 29, 0.3);
+            margin: 0 2px;
+        }
+
+        .note {
+            font-size: 13px;
+            color: #7F8C8D;
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        /* 移动端适配 */
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--border-color); }
+            .toc-list { display: flex; overflow-x: auto; padding: 10px; height: 65px; }
+            .toc-item { padding: 8px 15px; border-left: none; border-bottom: 3px solid transparent; white-space: nowrap; }
+            .toc-item.active { border-left: none; border-bottom-color: var(--primary-red); }
+            .main-content { padding: 20px 15px; }
+            .sidebar-header { padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 左侧侧边栏 -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>党课复习题库<br>(58题背诵版)</h2>
+            <div class="progress-wrapper">
+                <div class="progress-info">
+                    <span>背诵进度</span>
+                    <span id="progressText">0%</span>
+                </div>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" id="progressBar"></div>
+                </div>
+            </div>
+        </div>
+        <div class="toc-list" id="tocList">
+            <!-- JS 动态生成 -->
+        </div>
+    </div>
+
+    <!-- 右侧内容区 -->
+    <div class="main-content" id="mainContent">
+        <div class="content-wrapper">
+
+            <div class="chapter" id="chapter-1">
+                <div class="chapter-title">一、 党的性质、宗旨与指导思想</div>
+                
+                <div class="card">
+                    <div class="card-header" onclick="toggleCard(this)">
+                        <div class="check-circle" onclick="toggleMaster(event, this)"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                        <div class="question-text">1. 党的性质是什么？（手写重点记法）</div>
+                        <div class="toggle-arrow">▼</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="answer-text">
+                            <span class="highlight">两个先锋队、一个领导核心、三个代表</span>。<br><br>
+                            中国共产党是<span class="highlight">中国工人阶级的先锋队</span>，同时是<span class="highlight">中国人民和中华民族的先锋队</span>，是中国特色社会主义事业的<span class="highlight">领导核心</span>，代表中国先进生产力的发展要求，代表中国先进文化的前进方向，代表中国最广大人民的根本利益。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header" onclick="toggleCard(this)">
+                        <div class="check-circle" onclick="toggleMaster(event, this)"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                        <div class="question-text">2. 党的指导思想与现阶段主要矛盾？</div>
+                        <div class="toggle-arrow">▼</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="answer-text">
+                            <strong>指导思想：</strong>中国共产党以马克思列宁主义、毛泽东思想、邓小平理论和“三个代表”重要思想作为自己的行动指南。<br>
+                            <strong>主要矛盾：</strong>现阶段我国社会的主要矛盾是<span class="highlight">人民日益增长的物质文化需要同落后的社会生产之间的矛盾</span>。
+                            <div class="note">*注：此为题库原版经典表述，请按原文件背诵以应对考试。</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header" onclick="toggleCard(this)">
+                        <div class="check-circle" onclick="toggleMaster(event, this)"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                        <div class="question-text">3. 党的宗旨是什么？党的群众路线是什么？</div>
+                        <div class="toggle-arrow">▼</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="answer-text">
+                            <strong>宗旨：</strong><span class="highlight">全心全意为人民服务</span>。<br>
+                            <strong>群众路线：</strong>一切为了群众，一切依靠群众，从群众中来，到群众中去，把党的正确主张变为群众的自觉行动。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header" onclick="toggleCard(this)">
+                        <div class="check-circle" onclick="toggleMaster(event, this)"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                        <div class="question-text">4. 毛泽东思想活的灵魂与邓小平理论的首要问题</div>
+                        <div class="toggle-arrow">▼</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="answer-text">
+                            <strong>毛泽东思想活的灵魂：</strong><span class="highlight">实事求是、群众路线、独立自主</span>。<br>
+                            <strong>邓小平理论的首要问题：</strong><span class="highlight">搞清楚什么是社会主义，怎样建设社会主义</span>。
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chapter" id="chapter-2">
+                <div class="chapter-title">二、 党的路线、方针与基本政策</div>
+                
+                <div class="card">
+                    <div class="card-header" onclick="toggleCard(this)">
+                        <div class="check-circle" onclick="toggleMaster(event, this)"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                        <div class="question-text">5. 党在社会主义建设的根本任务与战略目标？</div>
+                        <div class="toggle-arrow">▼</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="answer-text">
+                            <strong>根本任务：</strong>进一步解放生产力，<span class="highlight">发展生产力</span>，逐步实现社会主义现代化，并且为此而改革生产关系和上层建筑中不适应生产力发展的方面和环节。<br>
+                            <strong>新世纪新阶段战略目标：</strong>巩固和发展已经初步达到的小康水平；到建党一百年时，建成惠及十几亿人口的更高水平的小康社会；到建国一百年时，人均国内生产总值达到中等发达国家水平，基本实现现代化。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header" onclick="toggleCard(this)">
+                        <div class="check-circle" onclick="toggleMaster(event, this)"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                        <div class="question-text">6. 党的基本路线与四项基本原则的主要内容？</div>
+                        <div class="toggle-arrow">▼</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="answer-text">
+                            <strong>基本路线：</strong>领导和团结全国各族人民，以经济建设为中心，坚持四项基本原则，坚持改革开放，自力更生，艰苦创业，为把我国建设成为富强、民主、文明的社会主义现代化国家而奋斗。<br>
+                            <strong>四项基本原则：</strong>坚持社会主义道路、坚持人民民主专政、坚持中国共产党的领导、坚持马克思列宁主义毛泽东思想。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header" onclick="toggleCard(this)">
+                        <div class="check-circle" onclick="toggleMaster(event, this)"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                        <div class="question-text">7. 我们党执政能力的主要内容与执政方式？</div>
+                        <div class="toggle-arrow">▼</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="answer-text">
+                            <strong>执政能力内容：</strong>就是提出和运用正确的理论、路线、方针、政策和策略，领导制定和实施宪法和法律，采取科学的领导制度和领导方式，动员和组织人民依法管理国家和社会事务...<br>
+                            <strong>执政方式：</strong><span class="highlight">依法执政</span>。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header" onclick="toggleCard(this)">
+                        <div class="check-circle" onclick="toggleMaster(event, this)"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                        <div class="question-text">8. 社会发展的决定力量与执政兴国的第一要务？</div>
+                        <div class="toggle-arrow">▼</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="answer-text">
+                            社会发展的决定力量：<span class="highlight">生产方式</span>。<br>
+                            执政兴国的第一要务：<span class="highlight">发展</span>。
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chapter" id="chapter-3">
+                <div class="chapter-title">三、 党员条件、权利义务与入党规定</div>
+                
+                <div class="card">
+                    <div class="card-header" onclick="toggleCard(this)">
+                        <div class="check-circle" onclick="toggleMaster(event, this)"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                        <div class="question-text">9. 申请入党必须具备的基本条件？</div>
+                        <div class="toggle-arrow">▼</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="answer-text">
+                            <span class="highlight">年满十八岁</span>的中国工人、农民、军人、知识分子和其他社会阶层的<span class="highlight">先进分子</span>，承认党的纲领和章程，愿意参加党的一个组织并在其中积极工作、执行党的决议和<span class="highlight">按期交纳党费</span>的，可以申请加入中国共产党。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header" onclick="toggleCard(this)">
+                        <div class="check-circle" onclick="toggleMaster(event, this)"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                        <div class="question-text">10. 党员的八项义务？（手写速记口诀）</div>
+                        <div class="toggle-arrow">▼</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="answer-text">
+                            速记口诀：<span class="highlight">①学习 ②贯彻 ③坚持 ④遵守 ⑤维护 ⑥批评 ⑦密切 ⑧发扬</span><br><br>
+                            (1) 认真<span class="highlight">学习</span>马克思列宁主义...<br>
+                            (2) <span class="highlight">贯彻</span>执行党的基本路线和各项方针...<br>
+                            (3) <span class="highlight">坚持</span>党和人民的利益高于一切，吃苦在前，享受在后...<br>
+                            (4) 自觉<span class="highlight">遵守</span>党的纪律...<br>
+                            (5) <span class="highlight">维护</span>党的团结和统一...<br>
+                            (6) 切实开展<span class="highlight">批评</span>和自我批评...<br>
+                            (7) <span class="highlight">密切</span>联系群众...<br>
+                            (8) <span class="highlight">发扬</span>社会主义新风尚...
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header" onclick="toggleCard(this)">
+                        <div class="check-circle" onclick="toggleMaster(event, this)"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                        <div class="question-text">11. 对党的决议和政策如有不同意见怎么办？</div>
+                        <div class="toggle-arrow">▼</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="answer-text">
+                            在<span class="highlight">坚决执行</span>的前提下，可以<span class="highlight">声明保留</span>，并且可以把自己的意见向党的上级组织直至中央提出。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header" onclick="toggleCard(this)">
+                        <div class="check-circle" onclick="toggleMaster(event, this)"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                        <div class="question-text">12. 发展党员、入党誓词及预备期规定</div>
+                        <div class="toggle-arrow">▼</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="answer-text">
+                            <strong>组织机构：</strong>发展党员，必须经过<span class="highlight">党的支部</span>，坚持<span class="highlight">个别吸收</span>的原则。<br>
+                            <strong>预备期：</strong>预备党员的预备期的延长时间是<span class="highlight">一年</span>。<br>
+                            <strong>入党誓词：</strong>我志愿加入中国共产党，拥护党的纲领，遵守党的章程，履行党员义务，执行党的决定，严守党的纪律，保守党的秘密，对党忠诚，积极工作，为共产主义奋斗终身，随时准备为党和人民牺牲一切，永不叛党。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header" onclick="toggleCard(this)">
+                        <div class="check-circle" onclick="toggleMaster(event, this)"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                        <div class="question-text">13. 党员先锋模范作用体现在哪五个方面？思想入党是一劳永逸的吗？</div>
+                        <div class="toggle-arrow">▼</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="answer-text">
+                            <strong>体现：</strong>1.努力成为终身学习的模范。 2.努力成为贯彻执行党的路线方针政策的模范。 3.努力成为全心全意为人民服务的模范。 4.努力成为遵纪守法、弘扬社会主义道德风尚的模范。 5.努力成为创造一流工作业绩的模范。<br><br>
+                            <strong>共产党员在组织上入了党，思想也就入了党，对吗？</strong><span class="highlight">答：不对！</span>党取得了执政地位，就意味着这种地位是一劳永逸的，对吗？<span class="highlight">答：不对！</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chapter" id="chapter-4">
+                <div class="chapter-title">四、 党的纪律、作风与组织制度</div>
+                
+                <div class="card">
+                    <div class="card-header" onclick="toggleCard(this)">
+                        <div class="check-circle" onclick="toggleMaster(event, this)"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                        <div class="question-text">14. 党的最大政治优势与执政后的最大危险？</div>
+                        <div class="toggle-arrow">▼</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="answer-text">
+                            最大政治优势：<span class="highlight">密切联系群众</span>。<br>
+                            执政后的最大危险：<span class="highlight">脱离群众</span>。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header" onclick="toggleCard(this)">
+                        <div class="check-circle" onclick="toggleMaster(event, this)"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                        <div class="question-text">15. 党的纪律处分有几种？（手写重点）</div>
+                        <div class="toggle-arrow">▼</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="answer-text">
+                            党的纪律处分有 <span class="highlight">5种</span>：<br>
+                            警告、严重警告、撤销党内职务、<span class="highlight">留党察看</span>、<span class="highlight">开除党籍</span>。<br>
+                            留党察看最长不超过<span class="highlight">两年</span>。党纪的最高处分是<span class="highlight">开除党籍</span>。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header" onclick="toggleCard(this)">
+                        <div class="check-circle" onclick="toggleMaster(event, this)"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                        <div class="question-text">16. 党组织讨论问题原则、最高领导机关及“三会一课”</div>
+                        <div class="toggle-arrow">▼</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="answer-text">
+                            <strong>讨论原则：</strong><span class="highlight">少数服从多数</span>。<br>
+                            <strong>最高领导机关：</strong>党的<span class="highlight">全国代表大会</span>和它所产生的<span class="highlight">中央委员会</span>。（任期五年）<br>
+                            <strong>三会一课：</strong>“三会”是定期召开<span class="highlight">支部党员大会、支部委员会、党小组会</span>；“一课”是按时上好<span class="highlight">党课</span>。<br>
+                            <strong>基层组织规定：</strong>成立党的基层组织必须有<span class="highlight">三人以上</span>的正式党员。党的全部工作和战斗力的基础是<span class="highlight">党的基层组织</span>。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header" onclick="toggleCard(this)">
+                        <div class="check-circle" onclick="toggleMaster(event, this)"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                        <div class="question-text">17. 党的三大作风与选拔干部的原则</div>
+                        <div class="toggle-arrow">▼</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="answer-text">
+                            <strong>三大作风：</strong>理论和实践相结合的作风，密切联系群众的作风，以及<span class="highlight">批评和自我批评的作风</span>。<br>
+                            <strong>选拔干部原则：</strong>按德才兼备的原则选拔干部，坚持任人唯贤，反对任人唯亲，努力实现干部队伍的<span class="highlight">革命化、年轻化、知识化、专业化</span>。
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chapter" id="chapter-5">
+                <div class="chapter-title">五、 党的先进性建设与历史地位</div>
+                
+                <div class="card">
+                    <div class="card-header" onclick="toggleCard(this)">
+                        <div class="check-circle" onclick="toggleMaster(event, this)"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                        <div class="question-text">18. 中国共产党成立时以什么为阶级基础？</div>
+                        <div class="toggle-arrow">▼</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="answer-text">
+                            以<span class="highlight">无产阶级</span>为阶级基础。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header" onclick="toggleCard(this)">
+                        <div class="check-circle" onclick="toggleMaster(event, this)"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                        <div class="question-text">19. 贯彻“三个代表”关键和本质是什么？</div>
+                        <div class="toggle-arrow">▼</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="answer-text">
+                            关键是：<span class="highlight">坚持与时俱进</span>。<br>
+                            核心是保持党的先进性，本质是<span class="highlight">执政为民</span>。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header" onclick="toggleCard(this)">
+                        <div class="check-circle" onclick="toggleMaster(event, this)"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                        <div class="question-text">20. 马克思主义政党的根本特征与建党理论的重大课题？</div>
+                        <div class="toggle-arrow">▼</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="answer-text">
+                            马克思主义政党的根本特征：<span class="highlight">先进性</span>。<br>
+                            自身建设的根本任务 / 带有根本性的重大课题：加强党的先进性建设，始终保持党的先进性。马克思主义具有<span class="highlight">与时俱进</span>的理论品质。
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header" onclick="toggleCard(this)">
+                        <div class="check-circle" onclick="toggleMaster(event, this)"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                        <div class="question-text">21. 科学发展观的含义与本质核心？</div>
+                        <div class="toggle-arrow">▼</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="answer-text">
+                            科学发展观是坚持<span class="highlight">以人为本</span>，全面、协调、可持续的发展观。<br>
+                            科学发展观的本质和核心：<span class="highlight">以人为本</span>。
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const tocList = document.getElementById('tocList');
+        const chapters = document.querySelectorAll('.chapter');
+        
+        chapters.forEach((chapter, index) => {
+            const titleText = chapter.querySelector('.chapter-title').innerText;
+            const link = document.createElement('a');
+            link.className = 'toc-item' + (index === 0 ? ' active' : '');
+            link.innerText = titleText; 
+            link.onclick = (e) => {
+                e.preventDefault();
+                document.getElementById('mainContent').scrollTo({
+                    top: chapter.offsetTop - 30,
+                    behavior: 'smooth'
+                });
+            };
+            tocList.appendChild(link);
+        });
+
+        const mainContent = document.getElementById('mainContent');
+        const tocItems = document.querySelectorAll('.toc-item');
+        
+        mainContent.addEventListener('scroll', () => {
+            let current = 0;
+            const scrollY = mainContent.scrollTop + 80; 
+            
+            chapters.forEach((chapter, index) => {
+                if (chapter.offsetTop <= scrollY) {
+                    current = index;
+                }
+            });
+            
+            tocItems.forEach(item => item.classList.remove('active'));
+            if(tocItems[current]) {
+                tocItems[current].classList.add('active');
+            }
+        });
+
+        updateProgress();
+
+        function toggleCard(element) {
+            const card = element.closest('.card');
+            card.classList.toggle('open');
+        }
+
+        function toggleMaster(event, circleElement) {
+            event.stopPropagation();
+            const card = circleElement.closest('.card');
+            const isMastered = card.classList.toggle('mastered');
+            
+            if (isMastered) {
+                card.classList.remove('open');
+            }
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const totalCards = document.querySelectorAll('.card').length;
+            const masteredCards = document.querySelectorAll('.card.mastered').length;
+            
+            let percentage = 0;
+            if (totalCards > 0) {
+                percentage = Math.round((masteredCards / totalCards) * 100);
+            }
+            
+            document.getElementById('progressBar').style.width = percentage + '%';
+            document.getElementById('progressText').textContent = `${masteredCards}/${totalCards} (${percentage}%)`;
+        }
+    </script>
+</body>
+</html>
